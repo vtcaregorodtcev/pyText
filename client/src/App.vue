@@ -4,7 +4,7 @@
       class="d-flex flex-column flex-md-row align-items-center
       p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm"
     >
-      <h5 class="my-0 mr-md-auto font-weight-normal">PyText</h5>
+      <h5 @click="goHome" class="my-0 mr-md-auto font-weight-normal">PyText</h5>
       <a class="btn btn-outline-primary" href="#/new">New Text</a>
     </div>
     <div class="container">
@@ -14,8 +14,15 @@
 </template>
 
 <script>
+import router from './router';
+
 export default {
   name: 'App',
+  methods: {
+    goHome() {
+      router.push({ name: 'TextList' });
+    },
+  },
 };
 </script>
 
@@ -23,7 +30,7 @@ export default {
 header {
   height: 60px;
 }
-tr {
+tr, h5 {
   cursor: pointer;
   background: white;
 }

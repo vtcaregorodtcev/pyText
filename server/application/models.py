@@ -1,6 +1,12 @@
 from . import db
 
-class Text(db.Model):
+
+class DictableModelMixin(object):
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Text(db.Model, DictableModelMixin):
     """Data model for text item."""
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer,
@@ -12,15 +18,11 @@ class Text(db.Model):
                          nullable=False)
     sentences = db.relationship("Sentence", back_populates="text")
 
-    def as_dict(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
     def __repr__(self):
         return '<Text {}>'.format(self.title)
 
 
-
-class Sentence(db.Model):
+class Sentence(db.Model, DictableModelMixin):
     """Data model for sentence item."""
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer,

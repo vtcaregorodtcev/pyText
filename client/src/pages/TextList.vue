@@ -7,8 +7,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in textList" :key="item.id">
-        <th scope="row">{{item.id}}</th>
+      <tr @click="gotoItem(item)" v-for="(item, index) in textList" :key="item.id">
+        <th scope="row">{{index + 1}}</th>
         <td>{{item.title}}</td>
       </tr>
     </tbody>
@@ -17,6 +17,7 @@
 
 <script>
 import { fetchTextList } from '../api';
+import router from '../router';
 
 export default {
   name: 'TextList',
@@ -24,6 +25,11 @@ export default {
     return {
       textList: [],
     };
+  },
+  methods: {
+    gotoItem(item) {
+      router.push({ name: 'TextItem', params: { text_id: item.id } });
+    },
   },
   created() {
     fetchTextList().then((list) => {
