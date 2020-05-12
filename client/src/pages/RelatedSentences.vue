@@ -11,10 +11,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in relatedList" :key="item.id">
+        <tr v-for="([sent, text], index) in relatedList" :key="index">
           <th scope="row">{{ index + 1 }}</th>
-          <td>{{ item.content }}</td>
-          <td>comming soon..</td>
+          <td>{{ sent }}</td>
+          <td><a href="javascript:void(0)" @click="goToText(text)">{{ text.title }}</a></td>
         </tr>
       </tbody>
     </table>
@@ -36,6 +36,9 @@ export default {
     backToSentence() {
       router.back();
     },
+    goToText(text) {
+      router.push({ name: 'TextItem', params: { text_id: text.id } });
+    },
   },
   created() {
     // eslint-disable-next-line camelcase
@@ -53,5 +56,10 @@ a {
   margin-bottom: 5px;
   display: inline-block;
 }
-h2 {margin-bottom:35px;}
+h2 {
+  margin-bottom: 35px;
+}
+tbody tr td:not(:first-child) {
+  width: 40%;
+}
 </style>
