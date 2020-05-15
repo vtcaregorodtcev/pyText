@@ -1,10 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-# from os import environ
-
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_utils import database_exists
 
 db = SQLAlchemy()
 
@@ -21,7 +18,6 @@ def create_app():
     with app.app_context():
         from . import routes  # Import routes
 
-        # if not database_exists(environ.get("SQLALCHEMY_DATABASE_URI")): # troubles with docker
         db.create_all()  # Create database tables for our data models
 
         return app

@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
 
+sqlite_path = "sqlite:///../db/py_text.db"
+
 
 class Config:
     """Set Flask configuration variables from .env file."""
@@ -15,6 +17,6 @@ class Config:
     FLASK_DEBUG = 1
 
     # Database
-    SQLALCHEMY_DATABASE_URI = "sqlite:///py_text.db" # environ.get("SQLALCHEMY_DATABASE_URI")
+    SQLALCHEMY_DATABASE_URI = sqlite_path
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
