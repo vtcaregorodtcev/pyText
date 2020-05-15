@@ -3,6 +3,7 @@ FROM python:latest
 ADD config.py /server/
 ADD wsgi.py /server/
 ADD application /server/application
+ADD db /server/db
 ADD requirements.txt /server/
 
 WORKDIR /server/

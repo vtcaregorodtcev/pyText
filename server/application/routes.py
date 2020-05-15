@@ -1,13 +1,17 @@
-import json
-from flask import jsonify, request, current_app as app, abort
-
-from .models import db, Text, Sentence
-
 from .utils import (get_sentences_from,
                     train_model,
                     prepare_data_for_model,
                     jsonify_arr,
-                    get_text_by_sentence)
+                    get_text_by_sentence,
+                    to_db_sentences)
+
+from .models import db, Text, Sentence
+from nltk import sent_tokenize
+import json
+from flask import jsonify, request, current_app as app, abort
+
+import nltk
+nltk.download('punkt')
 
 
 model = train_model(prepare_data_for_model(Sentence))
@@ -19,7 +23,7 @@ def fetch_text_list():
         return jsonify_arr(Text.query.all())
     else:
         text = json.loads(request.data)
-        sentences = get_sentences_from(text['content'])
+        sentences = sent_tokenize(text['content'])
 
         if not (len(sentences) > 0 and text['title']):
             return abort(400, 'text must be filled')
