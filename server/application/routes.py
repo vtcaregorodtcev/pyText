@@ -1,12 +1,14 @@
-from .utils import (get_sentences_from,
-                    train_model,
+from .utils import (train_model,
+                    retrain_model,
                     prepare_data_for_model,
                     jsonify_arr,
                     get_text_by_sentence,
-                    to_db_sentences)
+                    to_db_sentences,
+                    model_path)
 
 from .models import db, Text, Sentence
 from nltk import sent_tokenize
+from gensim.models import Word2Vec
 import json
 from flask import jsonify, request, current_app as app, abort
 
@@ -14,7 +16,12 @@ import nltk
 nltk.download('punkt')
 
 
-model = train_model(prepare_data_for_model(Sentence))
+@app.route('/train', methods=['GET'])
+def train_model_route():
+    model = train_model(prepare_data_for_model())
+    model.save(model_path)
+
+    return 'ok'
 
 
 @app.route('/textlist', methods=['GET', 'POST'])
@@ -33,6 +40,8 @@ def fetch_text_list():
 
         db.session.add(db_text)
         db.session.commit()
+
+        retrain_model([sentences])
 
         return jsonify(db_text.as_dict())
 
@@ -67,6 +76,7 @@ def fetch_related_sentences(text_id, sentence_id):
     if not text or not sentence:
         return abort(404, 'text or sentence not found')
 
+    model = Word2Vec.load(model_path)
     most_relevant_tuples = model.most_similar(
         sentence.as_dict()['content'])[:10]
 

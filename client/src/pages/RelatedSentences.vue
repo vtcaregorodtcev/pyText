@@ -8,13 +8,15 @@
           <th scope="col">#</th>
           <th scope="col">Content</th>
           <th scope="col">Text Title</th>
+          <th scope="col">Score</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="([sent, text], index) in relatedList" :key="index">
+        <tr v-for="([sent, text, score], index) in relatedList" :key="index">
           <th scope="row">{{ index + 1 }}</th>
           <td>{{ sent }}</td>
-          <td><a href="javascript:void(0)" @click="goToText(text)">{{ text.title }}</a></td>
+          <td><a href="javascript:void(0)" @click="goToText(text)">{{ text && text.title }}</a></td>
+          <td>{{ score }}</td>
         </tr>
       </tbody>
     </table>

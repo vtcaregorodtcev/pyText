@@ -2,24 +2,22 @@ from flask import jsonify
 from gensim.models import Word2Vec
 from .models import db, Sentence, Text
 
+from nltk.tokenize import sent_tokenize, word_tokenize
+import warnings
 
-def get_sentences_from(text):
-    return list(
-        map(
-            lambda sentence: sentence.strip(),
-            filter(
-                lambda sentence: len(sentence) > 0,
-                text.strip().split('.')
-            )
-        )
-    )
+warnings.filterwarnings(action='ignore')
+
+model_path = './db/trained_model.bin'
 
 
 def get_text_by_sentence(sentence):
     # find it in db
-    db_sent = db.session.query(Sentence).filter_by(content=sentence)
+    db_sent = db.session.query(Sentence).filter_by(content=sentence).first()
 
-    sent_dict = db_sent[0].as_dict()
+    sent_dict = db_sent.as_dict() if db_sent else None
+
+    if sent_dict is None:
+        return None
 
     # get text by this sentence
     sent_text = Text.query.get(sent_dict['text_id'])
@@ -36,10 +34,38 @@ def to_db_sentences(sentences):
 
 
 def train_model(sentences):
-    return Word2Vec(sentences, min_count=1, size=50, workers=3, window=3, sg=1)
+    sample = open("./db/fairy_tale.txt", "r")
+    s = sample.read()
+
+    f = s.replace("\n", " ")
+
+    data = []
+
+    for i in sent_tokenize(f):
+        temp = []
+
+        for j in word_tokenize(i):
+            temp.append(j.lower())
+
+        data.append(temp)
+
+    model = Word2Vec(data, min_count=1, size=100,
+                     workers=3, window=5, sg=1)
+
+    model.build_vocab(sentences, update=True)
+
+    return model
 
 
-def prepare_data_for_model(Sentence):
+def retrain_model(sentences):
+    model = Word2Vec.load(model_path)
+    model.build_vocab(sentences, update=True)
+    model.save(model_path)
+
+    return model
+
+
+def prepare_data_for_model():
     sent = list(map(lambda s: s.as_dict(), Sentence.query.all()))
 
     m = {}
